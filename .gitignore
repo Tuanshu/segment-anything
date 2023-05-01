@@ -35,3 +35,7 @@ model_ts*.txt
 .idea
 .vscode
 _darcs
+
+# images
+*.png
+*.jpg
