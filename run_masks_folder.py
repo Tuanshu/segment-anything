@@ -5,12 +5,29 @@ import torch
 
 from segment_anything import SamAutomaticMaskGenerator, SamPredictor, sam_model_registry
 
+import json
 import os
 import sys
 from pathlib import Path
 from tqdm import tqdm
 
 sys.path.append("..")
+
+# keys of mask_dict:
+# 'segmentation':
+# array([[ True,  True,  True, ..., False, False, False],       (512,512)
+# 'area':
+# 118170
+# 'bbox':
+# [0, 0, 511, 511]
+# 'predicted_iou':
+# 0.9733201265335083
+# 'point_coords':
+# [[296.0, 376.0]]
+# 'stability_score':
+# 0.9641032218933105
+# 'crop_box':
+# [0, 0, 512, 512]
 
 
 def save_resized_image_to_subfolder(image_path, input_folder, target_size):
@@ -25,7 +42,7 @@ def save_resized_image_to_subfolder(image_path, input_folder, target_size):
 
 
 def get_mask_generator():
-    sam_checkpoint = r"C:\Users\TuanShu\repos\segment-anything\sam_vit_h_4b8939.pth"
+    sam_checkpoint = r"D:\repos\Grounded-Segment-Anything\sam_vit_h_4b8939.pth"
     model_type = "vit_h"
     sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
     mask_generator = SamAutomaticMaskGenerator(sam)
@@ -60,6 +77,10 @@ def process_image(image_path, input_folder, predefined_size):
     subfolder = os.path.join(input_folder, image_path.stem)
     os.makedirs(subfolder, exist_ok=True)
 
+    # Create a subfolder for metadata named after the image stem + 'meta'
+    meta_subfolder = os.path.join(input_folder, image_path.stem + 'meta')
+    os.makedirs(meta_subfolder, exist_ok=True)
+
     # Save the masks in the subfolder with the specified naming pattern
     for idx, mask_dict in enumerate(sorted_masks, 1):
         mask = mask_dict['segmentation']
@@ -72,6 +93,14 @@ def process_image(image_path, input_folder, predefined_size):
         mask_filepath = os.path.join(subfolder, mask_filename)
         cv2.imwrite(mask_filepath, mask)
 
+        # Save metadata to a JSON file in the metadata subfolder
+        metadata = {k: v for k, v in mask_dict.items() if k != 'segmentation'}
+        json_filename = f"{idx:03d}_{area}.json"
+        json_filepath = os.path.join(meta_subfolder, json_filename)
+
+        with open(json_filepath, 'w') as json_file:
+            json.dump(metadata, json_file)
+
 
 def main(input_folder, predefined_size):
     num_images = count_images(input_folder)
@@ -83,7 +112,9 @@ def main(input_folder, predefined_size):
 
 
 if __name__ == "__main__":
+    # input_folder = 'notebooks/images/hip'
     input_folder = 'notebooks/images/hip'
+
     predefined_size = (512, 512)
     mask_generator = get_mask_generator()
     main(input_folder, predefined_size)
