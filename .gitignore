@@ -38,6 +38,6 @@ _darcs
 
 
 #
-*.jpg
-*.png
-*.jpeg
+# *.jpg
+# *.png
+# *.jpeg
