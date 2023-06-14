@@ -41,12 +41,14 @@ def save_resized_image_to_subfolder(image_path, input_folder, target_size):
     return resized_image
 
 
-def get_mask_generator():
+def get_mask(image):
     sam_checkpoint = r"D:\repos\Grounded-Segment-Anything\sam_vit_h_4b8939.pth"
+    sam_checkpoint = r"sam_vit_h_4b8939.pth"
+
     model_type = "vit_h"
     sam = sam_model_registry[model_type](checkpoint=sam_checkpoint)
     mask_generator = SamAutomaticMaskGenerator(sam)
-    return mask_generator
+    return mask_generator.generate(image)
 
 
 def count_images(input_folder):
@@ -68,7 +70,7 @@ def process_image(image_path, input_folder, predefined_size):
     cv2.imwrite(str(image_path), image)
 
     # Generate masks
-    masks = mask_generator.generate(image)
+    masks = get_mask(image)
 
     # Sort the masks by area (large to small)
     sorted_masks = sorted(masks, key=lambda x: x['area'], reverse=True)
@@ -113,8 +115,11 @@ def main(input_folder, predefined_size):
 
 if __name__ == "__main__":
     # input_folder = 'notebooks/images/hip'
-    input_folder = 'notebooks/images/hip'
+    input_folder = 'notebooks/images/pih'
+    input_folder = r'C:\Users\TuanShu\repos\mxi_playground'
+    predefined_size = (800, 500) # (1600, 1000) #(512, 512)
+    predefined_size = (512, 512) # (1600, 1000) #(512, 512)
 
-    predefined_size = (512, 512)
-    mask_generator = get_mask_generator()
+
+    #mask_generator = get_mask_generator()
     main(input_folder, predefined_size)

@@ -83,7 +83,9 @@ def main(parent_folder, min_area, max_area):
 
 
 if __name__ == "__main__":
-    parent_folder = 'notebooks/images/hip'
-    min_area = 50
-    max_area = 500
+    parent_folder = 'notebooks/images/pih'
+    parent_folder = r'C:\Users\TuanShu\repos\mxi_playground'
+
+    min_area = 20#50
+    max_area = 500#500
     main(parent_folder, min_area, max_area)
