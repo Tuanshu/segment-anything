@@ -3,7 +3,7 @@
 
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
-
+# python scripts\export_onnx_model_also_enc.py --checkpoint weights\mobile_sam.pt --model-type vit_tiny --encoder-output mobilesam_onnx_enc.onnx --quantize-encoder-out  mobilesam_onnx_enc_q.onnx
 import onnx
 import torch
 from onnx.external_data_helper import convert_model_to_external_data
